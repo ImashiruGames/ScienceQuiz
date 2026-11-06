@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>理科暗記ラボ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+/* Layout: one narrow notebook column on graph paper, sticky top bar, keyboard docked at the bottom during quizzes */
+:root{
+  --paper:#EDF2F8; --gridline:rgba(30,86,208,.075); --card:#FFFFFF; --ink:#16213A; --muted:#566381; --line:#D1DAE7;
+  --red:#DE2B37; --red-soft:rgba(222,43,55,.09); --accent:#1E56D0; --accent-ink:#FFFFFF; --accent-soft:rgba(30,86,208,.10);
+  --ok:#0F8657; --ok-soft:rgba(15,134,87,.12); --ng:#CC3030; --ng-soft:rgba(204,48,48,.10);
+  --key:#FFFFFF; --key-edge:#BFCADB; --chl:40%;
+    --f-display:"Dela Gothic One","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1524; --gridline:rgba(120,155,255,.06); --card:#172136; --ink:#E6EBF5; --muted:#97A4BD; --line:#2A3752;
+    --red:#FF5A64; --red-soft:rgba(255,90,100,.12); --accent:#7AA2FF; --accent-ink:#0E1524; --accent-soft:rgba(122,162,255,.14);
+    --ok:#3FCB8F; --ok-soft:rgba(63,203,143,.14); --ng:#FF6E6E; --ng-soft:rgba(255,110,110,.13);
+    --key:#1F2B44; --key-edge:#0A101C; --chl:70%;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1524; --gridline:rgba(120,155,255,.06); --card:#172136; --ink:#E6EBF5; --muted:#97A4BD; --line:#2A3752;
+  --red:#FF5A64; --red-soft:rgba(255,90,100,.12); --accent:#7AA2FF; --accent-ink:#0E1524; --accent-soft:rgba(122,162,255,.14);
+  --ok:#3FCB8F; --ok-soft:rgba(63,203,143,.14); --ng:#FF6E6E; --ng-soft:rgba(255,110,110,.13);
+  --key:#1F2B44; --key-edge:#0A101C; --chl:70%;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--gridline) 1px,transparent 1px),linear-gradient(90deg,var(--gridline) 1px,transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.7; min-height:100%;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--card)}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{text-wrap:balance;margin:0}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--card);border-bottom:1px solid var(--line)}
+.bar-in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px;min-height:54px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:6px}
+.bar .back{border:1px solid var(--line);background:var(--paper);border-radius:10px;width:40px;height:40px;display:grid;place-items:center;flex:none}
+.bar .back[hidden]{display:none}
+.bar .ttl{flex:1;min-width:0;font-weight:700;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar .ttl .brand{font-family:var(--f-display);font-weight:400;font-size:1.15rem;letter-spacing:.02em}
+.bar .ttl .brand b{color:var(--red);font-weight:400}
+.pill-btn{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:700;flex:none}
+.pill-btn[aria-pressed="false"]{color:var(--muted)}
+
+main{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
+
+.eyebrow{font-size:.74rem;letter-spacing:.14em;font-weight:700;color:var(--muted)}
+.display{font-family:var(--f-display);font-weight:400;letter-spacing:.01em;line-height:1.3}
+.muted{color:var(--muted)}
+.chc{color:hsl(var(--h) 72% var(--chl))}
+.ico{width:100%;height:100%;display:block}
+
+/* home */
+.hero{display:grid;grid-template-columns:1fr auto;gap:12px 18px;align-items:end;padding-top:6px}
+.hero h1{font-size:clamp(1.9rem,7vw,2.8rem)}
+.hero h1 b{color:var(--red);font-weight:400}
+.hero p{margin:6px 0 0;color:var(--muted)}
+.meter{text-align:right;font-variant-numeric:tabular-nums}
+.meter .n{font-family:var(--f-display);font-size:1.9rem;line-height:1}
+.meter .l{font-size:.74rem;color:var(--muted);letter-spacing:.1em}
+.chlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.chrow{width:100%;text-align:left;display:grid;grid-template-columns:48px 1fr;gap:4px 14px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;position:relative}
+.chrow:hover{border-color:hsl(var(--h) 60% var(--chl))}
+.chrow .badge{grid-row:span 2;width:48px;height:48px;border-radius:12px;background:hsl(var(--h) 72% var(--chl) / .13);padding:9px}
+.chrow .nm{font-weight:700;font-size:1.05rem;line-height:1.35;min-width:0}
+.chrow .nm small{display:block;font-size:.72rem;color:var(--muted);font-weight:500;letter-spacing:.06em}
+.steps{display:flex;gap:4px;align-items:center}
+.steps i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.steps i.on{background:hsl(var(--h) 72% var(--chl))}
+.steps em{font-style:normal;font-size:.72rem;color:var(--muted);margin-left:6px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.crown{position:absolute;top:10px;right:12px;font-size:.68rem;font-weight:700;color:var(--red);border:1.5px solid var(--red);border-radius:999px;padding:0 8px;letter-spacing:.08em}
+.foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;font-size:.82rem;color:var(--muted);padding-top:6px}
+.linkbtn{background:none;border:none;color:var(--muted);text-decoration:underline;padding:4px 0;font-size:.82rem}
+.confirm{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* chapter */
+.chhead{display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center}
+.chhead .badge{width:64px;height:64px;border-radius:16px;background:hsl(var(--h) 72% var(--chl) / .13);padding:12px}
+.chhead h1{font-size:clamp(1.45rem,5.5vw,2rem)}
+.mode{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.mode-top{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+.num{font-family:var(--f-display);font-size:1rem;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-variant-numeric:tabular-nums}
+.mode h2{font-size:1.08rem;line-height:1.4}
+.mode p{margin:2px 0 0;font-size:.88rem;color:var(--muted)}
+.tag{font-size:.72rem;font-weight:700;border-radius:999px;padding:2px 10px;white-space:nowrap;border:1px solid var(--line);color:var(--muted)}
+.tag.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:12px;padding:12px 18px;font-weight:700;background:var(--accent);color:var(--accent-ink);min-height:48px}
+.btn.ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn.red{background:var(--red);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.wide{width:100%}
+.glist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.grow{width:100%;text-align:left;display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.grow:hover{border-color:var(--accent)}
+.grow b{font-size:.98rem}
+.grow small{grid-column:1;color:var(--muted);font-size:.78rem}
+.grow .tag{grid-row:1 / span 2;grid-column:2}
+.lock{display:flex;flex-direction:column;gap:6px;font-size:.9rem;background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:12px 14px}
+.lock div{display:flex;gap:8px;align-items:baseline}
+.lock .ck{font-weight:700;width:1.2em;flex:none}
+.lock .ck.y{color:var(--ok)}
+
+/* cards */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.note{font-size:.86rem;color:var(--muted);margin:0}
+.cgroup h3{font-size:.95rem;margin:4px 0 8px;display:flex;align-items:center;gap:8px}
+.cgroup h3::before{content:"";width:10px;height:10px;border-radius:2px;background:hsl(var(--h) 72% var(--chl))}
+.clist{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.clist li{padding:13px 16px;line-height:2;border-top:1px solid var(--line);font-size:1rem}
+.clist li:first-child{border-top:none}
+.term{display:inline;border:none;background:var(--red-soft);color:transparent;border-bottom:2px dashed var(--red);border-radius:4px 4px 0 0;padding:1px 6px;margin:0 2px;font-weight:700;line-height:1.6;min-width:3em;transition:color .15s,background .15s}
+.term.show{color:var(--red);background:transparent;border-bottom-style:solid}
+.term .rd{font-size:.7em;font-weight:500;margin-left:4px}
+
+/* quiz */
+.qwrap{display:flex;flex-direction:column;gap:14px;flex:1}
+.qprog{display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.qprog .track{flex:1;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.qprog .fill{height:100%;background:var(--accent);border-radius:4px;transition:width .3s}
+.qcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 18px 20px;font-size:clamp(1.02rem,4.2vw,1.18rem);line-height:2.05}
+.qcard .qtag{font-size:.74rem;font-weight:700;color:var(--muted);letter-spacing:.08em;margin-bottom:6px;display:flex;gap:10px;flex-wrap:wrap;line-height:1.5}
+.blank{display:inline-block;min-width:4.5em;padding:0 8px;margin:0 3px;border-bottom:3px solid var(--line);background:var(--paper);border-radius:6px 6px 0 0;text-align:center;font-weight:700;line-height:1.75;vertical-align:baseline;color:var(--muted)}
+.blank.cur{border-bottom-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.blank.filled{color:var(--ink);border-bottom-color:var(--muted)}
+.blank.ok{color:var(--ok);background:var(--ok-soft);border-bottom-color:var(--ok)}
+.blank.ng{color:var(--ng);background:var(--ng-soft);border-bottom-color:var(--ng);text-decoration:line-through;text-decoration-thickness:2px}
+.caret{display:inline-block;width:2px;height:1.1em;background:var(--accent);vertical-align:-.15em;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.dock{position:sticky;bottom:0;z-index:5;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));background:var(--card);border-top:1px solid var(--line);
+  padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 24px rgba(0,0,0,.06)}
+.dock-in{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.inrow{display:flex;gap:8px;align-items:center}
+.inbox{flex:1;min-width:0;min-height:46px;border:2px solid var(--accent);border-radius:12px;padding:6px 12px;font-size:1.25rem;font-weight:700;letter-spacing:.06em;display:flex;align-items:center;overflow-x:auto;white-space:nowrap;background:var(--paper)}
+.inbox .ph{color:var(--muted);font-size:.85rem;font-weight:500;letter-spacing:0}
+.mini{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:0 10px;height:46px;font-size:.8rem;font-weight:700;flex:none}
+.hint{font-size:.85rem;color:var(--accent);margin:0;font-weight:700}
+.kb{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.k{height:clamp(38px,9.5vw,46px);border:none;border-radius:8px;background:var(--key);box-shadow:0 2px 0 var(--key-edge);font-size:clamp(1rem,4.4vw,1.2rem);font-weight:500;padding:0;min-width:0;touch-action:manipulation}
+.k:active{transform:translateY(2px);box-shadow:none}
+.k.sp{visibility:hidden}
+.kb2{display:grid;grid-template-columns:1fr 1fr 1fr 1.6fr 2.4fr;gap:4px}
+.k.fn{background:var(--paper);font-size:.9rem;font-weight:700}
+.k.go{background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:1rem}
+.fb{display:flex;flex-direction:column;gap:8px;animation:rise .25s ease-out}
+.fb .head{font-family:var(--f-display);font-size:1.5rem;display:flex;align-items:center;gap:10px;line-height:1.2}
+.fb.ok .head{color:var(--ok)} .fb.ng .head{color:var(--ng)}
+.fb .ans{font-size:1rem}
+.fb .ans b{color:var(--red);font-size:1.15rem}
+@keyframes rise{from{transform:translateY(8px);opacity:.3}to{transform:none;opacity:1}}
+.shake{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+/* result */
+.res{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 18px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center;position:relative;overflow:hidden}
+.res .score{font-family:var(--f-display);font-size:clamp(3rem,16vw,4.6rem);line-height:1;font-variant-numeric:tabular-nums}
+.res .score small{font-size:.4em;color:var(--muted)}
+.res .perfect{font-family:var(--f-display);font-size:clamp(2.2rem,11vw,3.4rem);line-height:1;color:var(--red);letter-spacing:.06em;animation:pop .7s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pop{0%{transform:scale(.2) rotate(-8deg);opacity:0}100%{transform:none;opacity:1}}
+.res.gold{background:radial-gradient(circle at 50% 0%,hsl(45 95% 60% / .28),transparent 65%),var(--card);border-color:hsl(45 90% 50%)}
+.res p{margin:0}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.miss h3{font-size:.95rem;margin-bottom:8px}
+.miss ul{list-style:none;margin:0;padding:0;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.miss li{padding:12px 16px;border-top:1px solid var(--line);line-height:1.9;font-size:.95rem}
+.miss li:first-child{border-top:none}
+.miss .red{color:var(--red);font-weight:700}
+.miss .yours{display:block;font-size:.8rem;color:var(--muted)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+/* builder */
+.maker{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--accent);color:var(--accent-ink);border:none;border-radius:16px;padding:16px 18px;text-align:left}
+.maker b{font-family:var(--f-display);font-weight:400;font-size:1.3rem;line-height:1.3;display:block}
+.maker small{display:block;opacity:.88;font-size:.84rem}
+.maker .arw{font-size:1.5rem;flex:none}
+.sec-h{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.rlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rlist li{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rrow{display:flex;align-items:stretch}
+.chk{flex:1;min-width:0;display:flex;align-items:center;gap:12px;background:none;border:none;padding:10px 12px;text-align:left}
+.chk .box{width:22px;height:22px;border-radius:6px;border:2px solid var(--muted);flex:none;display:grid;place-items:center;font-size:.85rem;font-weight:700;color:var(--card)}
+.chk.all .box{background:hsl(var(--h) 72% var(--chl));border-color:transparent}
+.chk.all .box::after{content:"✓"}
+.chk.part .box{border-color:hsl(var(--h) 72% var(--chl))}
+.chk.part .box::after{content:"";width:10px;height:3px;border-radius:2px;background:hsl(var(--h) 72% var(--chl))}
+.chk .nm{font-weight:700;line-height:1.35;min-width:0}
+.chk .nm small{display:block;font-size:.72rem;color:var(--muted);font-weight:500}
+.opn{flex:none;border:none;border-left:1px solid var(--line);background:none;padding:0 12px;font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.gchips{display:flex;flex-wrap:wrap;gap:6px;padding:2px 12px 12px 46px}
+.gchip{border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:.84rem;font-weight:700;color:var(--muted)}
+.gchip small{font-weight:500;margin-left:6px}
+.gchip[aria-pressed="true"]{border-color:hsl(var(--h) 72% var(--chl));color:var(--ink);background:hsl(var(--h) 72% var(--chl) / .12)}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.seg button,.opt{border:1.5px solid var(--line);background:var(--paper);border-radius:12px;min-height:46px;font-weight:700;padding:0 4px}
+.seg button[aria-pressed="true"],.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.opt{text-align:left;padding:10px 14px;display:flex;flex-direction:column;gap:2px}
+.opt small{font-weight:500;color:var(--muted);font-size:.8rem}
+.startbar{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:4;display:flex;gap:12px;align-items:center;justify-content:space-between;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.12)}
+.startbar .sum{min-width:0;font-weight:700}
+.startbar .sum b{font-family:var(--f-display);font-weight:400;font-size:1.4rem;font-variant-numeric:tabular-nums}
+.startbar .sum small{display:block;color:var(--muted);font-size:.78rem;font-weight:500}
+.misscnt{color:var(--ng)}
+
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media (max-width:420px){.hero{grid-template-columns:1fr}.meter{text-align:left}}
+</style>
+</head>
+<body>
+<header class="bar"><div class="bar-in">
+  <button class="back" id="back" aria-label="戻る" hidden>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <div class="ttl" id="htitle"></div>
+  <button class="pill-btn" id="snd" aria-pressed="true">効果音 ON</button>
+</div></header>
+<main id="main"></main>
+<canvas id="fx" hidden></canvas>
+
+<script>
+/* ===== 問題データ（問題文はテキストのまま） [[表示|よみ|別解]] ===== */
+const CH=[
+{t:"光と音",sec:"§1",h:42,groups:[
+ {n:"光の反射",q:[
+  "自ら光を出す物体を[[光源|こうげん]]という。",
+  "光が反射したとき，光が当たった位置で，光が反射した面に垂直な線と入射した光がつくる角のことを[[入射角|にゅうしゃかく]]という。",
+  "光が反射したとき，光が当たった位置で，光が反射した面に垂直な線と反射した光がつくる角のことを[[反射角|はんしゃかく]]という。",
+  "光が反射するとき，入射角と反射角が等しくなることを[[光の反射の法則|ひかりのはんしゃのほうそく]]という。"]},
+ {n:"光の屈折",q:[
+  "透明な物体に光が入射するとき，ななめに入射する光が，境界面で曲がることを，[[光の屈折|ひかりのくっせつ]]という。",
+  "光が入射した点で境界面に垂直な線と屈折した光のつくる角を[[屈折角|くっせつかく]]という。",
+  "透明な物体から光が出るとき，入射角を大きくしていくと，ある角度以上では，境界面ですべての光が反射するようになる。このことを[[全反射|ぜんはんしゃ]]という。"]},
+ {n:"凸レンズ",q:[
+  "中心がふくらんだレンズのことを[[凸レンズ|とつれんず]]という。",
+  "凸レンズを通して見えるものや，凸レンズを通してスクリーンにうつって見えるものを[[像|ぞう]]という。",
+  "凸レンズの軸に平行に進む光が，凸レンズに入るときと出るときに屈折して集まる1点を[[焦点|しょうてん]]という。",
+  "凸レンズの中心から焦点までの距離を[[焦点距離|しょうてんきょり]]という。"]},
+ {n:"像と音",q:[
+  "物体が凸レンズの焦点より外側にあるときに見える，スクリーンに上下左右逆にうつる像を[[実像|じつぞう]]という。",
+  "物体が焦点と凸レンズの間にあるとき，凸レンズをのぞくと見える，物体より大きな像を[[虚像|きょぞう]]という。",
+  "振動のはばのことを[[振幅|しんぷく]]という。",
+  "1秒間に弦が振動する回数のことを[[振動数|しんどうすう]]という。"]}
+]},
+{t:"力と圧力",sec:"§2",h:212,groups:[
+ {n:"力と質量",q:[
+  "地球上の物体が受けている，地球の中心方向に引っ張られる力のことを[[重力|じゅうりょく]]という。",
+  "力の大きさの単位には[[ニュートン(N)|にゅーとん]]が使われる。",
+  "ばねを引く力の大きさとばねののびが比例することを，[[フックの法則|ふっくのほうそく]]という。",
+  "場所が変わっても変化しない，物質そのものの量のことを[[質量|しつりょう]]という。"]},
+ {n:"圧力",q:[
+  "面を垂直におす単位面積あたりの力を[[圧力|あつりょく]]という。",
+  "圧力の単位には[[パスカル(Pa)|ぱすかる]]を用いる。",
+  "水中でまわりの水から受ける圧力のことを[[水圧|すいあつ]]という。",
+  "水中にある物体にはたらく上向きの力を[[浮力|ふりょく]]という。",
+  "空気にはたらく重力による圧力を[[大気圧|たいきあつ]]という。"]}
+]},
+{t:"身のまわりの物質",sec:"§3",h:275,groups:[
+ {n:"物体と物質",q:[
+  "ものを外見で判断する場合，そのものを[[物体|ぶったい]]という。",
+  "ものをつくっている材料から判断する場合，そのものを[[物質|ぶっしつ]]という。",
+  "金属をみがくと光る特有のかがやきを[[金属光沢|きんぞくこうたく]]という。",
+  "金属以外の物質のことを[[非金属|ひきんぞく]]という。"]},
+ {n:"密度と有機物",q:[
+  "上皿てんびんや電子てんびんではかることのできる物質そのものの量を[[質量|しつりょう]]という。",
+  "物質1cm³あたりの質量を[[密度|みつど]]という。",
+  "炭素をふくむ物質のことを[[有機物|ゆうきぶつ]]という。",
+  "有機物以外の物質のことを[[無機物|むきぶつ]]という。"]}
+]},
+{t:"気体・水溶液と状態変化",sec:"§4・§5",h:188,groups:[
+ {n:"気体の集め方",q:[
+  "水にとけにくい気体を集める方法を[[水上置換|すいじょうちかん]]という。",
+  "水にとけやすく，空気より密度が小さい気体を集める方法を[[上方置換|じょうほうちかん]]という。",
+  "水にとけやすく，空気より密度が大きい気体を集める方法を[[下方置換|かほうちかん]]という。"]},
+ {n:"溶液のことば",q:[
+  "溶液にとけている物質を[[溶質|ようしつ]]という。",
+  "物質をとかしている液体を[[溶媒|ようばい]]という。",
+  "物質がとけている液全体を[[溶液|ようえき]]という。",
+  "溶媒が水である溶液を[[水溶液|すいようえき]]という。"]},
+ {n:"物質の種類と濃度",q:[
+  "1種類の物質でできているものを[[純粋な物質|じゅんすいなぶっしつ]]という。",
+  "いくつかの物質が混ざり合ったものを[[混合物|こんごうぶつ]]という。",
+  "溶液のこさを[[濃度|のうど]]という。",
+  "溶液の濃度を，溶質の質量が溶液全体の何%にあたるかで表したものを[[質量パーセント濃度|しつりょうぱーせんとのうど]]という。"]},
+ {n:"結晶と溶解度",q:[
+  "いくつかの平面で囲まれた規則正しい形をしている固体のことを[[結晶|けっしょう]]という。",
+  "物質がそれ以上とけることができない水溶液を[[飽和水溶液|ほうわすいようえき]]という。",
+  "100gの水にそれ以上とけることができないようになったときの溶質の質量を[[溶解度|ようかいど]]という。",
+  "水の温度ごとの溶解度をグラフに表したものを[[溶解度曲線|ようかいどきょくせん]]という。",
+  "溶解度の差を利用して溶液から溶質を結晶としてとり出すことを[[再結晶|さいけっしょう]]という。"]},
+ {n:"状態変化",q:[
+  "固体⇔液体⇔気体のように，温度によって物質の状態が変わることを[[状態変化|じょうたいへんか]]という。",
+  "液体が沸騰して気体に変化するときの温度を[[沸点|ふってん]]という。",
+  "固体がとけて液体に変化するときの温度を[[融点|ゆうてん]]という。",
+  "液体を熱して沸騰させ，出てくる蒸気（気体）を冷やして再び液体としてとり出すことを[[蒸留|じょうりゅう]]という。"]}
+]},
+{t:"植物のつくりとはたらき",sec:"§6・§7",h:128,groups:[
+ {n:"花のつくり",q:[
+  "めしべのもとのふくらんだ部分を[[子房|しぼう]]という。",
+  "子房の中にある，将来種子になる部分を[[胚珠|はいしゅ]]という。",
+  "胚珠が子房で包まれている植物を[[被子植物|ひししょくぶつ]]という。",
+  "めしべの柱頭に花粉がつくことを[[受粉|じゅふん]]という。"]},
+ {n:"果実と種子",q:[
+  "受粉によって，子房が成長した部分を[[果実|かじつ]]という。",
+  "受粉によって，胚珠が成長した部分を[[種子|しゅし]]という。",
+  "胚珠がむき出しになっている植物を[[裸子植物|らししょくぶつ]]という。",
+  "花をつけて種子をつくる植物を[[種子植物|しゅししょくぶつ]]という。"]},
+ {n:"葉のつくり",q:[
+  "葉などをうすく切って観察したとき，内部に見える小さな部屋のようなものを[[細胞|さいぼう]]という。",
+  "植物の葉の細胞の中にある緑色の粒を[[葉緑体|ようりょくたい]]という。",
+  "葉に見られる筋のことを[[葉脈|ようみゃく]]という。",
+  "葉脈などに集まっている管の集まりを[[維管束|いかんそく]]という。",
+  "葉の表皮にある，2つの三日月形の細胞（孔辺細胞）に囲まれたすきまを[[気孔|きこう]]という。"]},
+ {n:"植物のはたらきと管",q:[
+  "根から吸い上げられた水が水蒸気となって出ていくことを[[蒸散|じょうさん]]という。",
+  "葉の葉緑体に光が当たって，デンプンなどの養分がつくられるはたらきを[[光合成|こうごうせい]]という。",
+  "動物，植物がともに行っている，空気中の酸素をとり入れ二酸化炭素をはき出すはたらきを[[呼吸|こきゅう]]という。",
+  "植物にある，根から吸収された水や肥料分の通り道である管を[[道管|どうかん]]という。",
+  "植物にある，葉でつくられた養分が，水にとける物質に変えられた後に通る管を[[師管|しかん]]という。"]},
+ {n:"根のつくり",q:[
+  "根を観察すると見られる，綿毛のようなものを[[根毛|こんもう]]という。",
+  "葉脈が平行に通る植物に見られる，同じような太さのたくさんの根を[[ひげ根|ひげね]]という。",
+  "葉脈が網目状の植物に見られる，太い根を[[主根|しゅこん]]という。",
+  "葉脈が網目状の植物に見られる，太い根から枝分かれした根を[[側根|そっこん]]という。"]}
+]},
+{t:"植物の分類",sec:"§8",h:158,groups:[
+ {n:"被子植物のなかま分け",q:[
+  "種子ができるとき最初につくられる葉を[[子葉|しよう]]という。",
+  "子葉が1枚ある被子植物を[[単子葉類|たんしようるい]]という。",
+  "子葉が2枚ある被子植物を[[双子葉類|そうしようるい]]という。",
+  "花弁が1枚ずつに分かれているものを[[離弁花類|りべんかるい]]という。",
+  "花弁がつながっているものを[[合弁花類|ごうべんかるい]]という。"]},
+ {n:"種子をつくらない植物",q:[
+  "種子をつくらない植物の中で，葉，茎，根の区別があり，維管束がある植物を[[シダ植物|しだしょくぶつ]]という。",
+  "種子をつくらない植物の中で，葉，茎，根の区別がなく，維管束がない植物を[[コケ植物|こけしょくぶつ]]という。",
+  "シダ植物とコケ植物は種子ではなく[[胞子|ほうし]]でふえる。"]}
+]},
+{t:"火山と地震",sec:"§9",h:8,groups:[
+ {n:"マグマと火山",q:[
+  "地球内部の熱により，地下の岩石が高温でとけてできるものを[[マグマ|まぐま]]という。",
+  "マグマが地表付近まで上昇したときに，マグマの中にふくまれる高圧のガスが地表付近の岩石などをふき飛ばすことを[[噴火|ふんか]]という。",
+  "マグマが地表にふき出してできた山を[[火山|かざん]]という。",
+  "マグマが地表に現れたものを[[溶岩|ようがん]]という。"]},
+ {n:"火山噴出物",q:[
+  "火山の噴火の際にふき出る，軽くて風で遠くまで運ばれやすい直径2mm以下の粒を[[火山灰|かざんばい]]という。",
+  "火山の噴火の際にふき出る，溶岩や火山灰，火山ガスなどをまとめて[[火山噴出物|かざんふんしゅつぶつ]]という。",
+  "マグマが冷えてできた粒のなかで，結晶になった物を[[鉱物|こうぶつ]]という。",
+  "地表まで運ばれてきたマグマが，噴火の勢いで引きちぎられ，ふき飛ばされて空中で冷え固まった物を[[火山弾|かざんだん]]という。"]},
+ {n:"火成岩",q:[
+  "マグマが冷え固まった岩石を[[火成岩|かせいがん]]という。",
+  "マグマが急に冷えて固まった岩石を[[火山岩|かざんがん]]という。",
+  "マグマが長時間をかけ冷え固まった岩石を[[深成岩|しんせいがん]]という。"]},
+ {n:"岩石のつくり",q:[
+  "火山岩のつくりのなかにある，形がわからないほどの小さな粒のことを[[石基|せっき]]という。",
+  "火山岩のつくりのなかにある，比較的大きな黒色や白色の鉱物のことを[[斑晶|はんしょう]]という。",
+  "石基の間に斑晶が散らばって見えるような岩石のつくりを[[斑状組織|はんじょうそしき]]という。",
+  "ひとつひとつの鉱物が大きく，同じくらいの大きさの鉱物からなる岩石のつくりを[[等粒状組織|とうりゅうじょうそしき]]という。"]},
+ {n:"地震のゆれ",q:[
+  "大地がゆれることを[[地震|じしん]]という。",
+  "地震が発生した場所を[[震源|しんげん]]という。",
+  "震源の真上の地点を[[震央|しんおう]]という。",
+  "地震のはじめの小さなゆれを[[初期微動|しょきびどう]]といい，その後からくる大きなゆれを[[主要動|しゅようどう]]という。"]},
+ {n:"地震の波と大きさ",q:[
+  "初期微動を伝える波を[[P波|ぴーは|ぴいは]]という。",
+  "主要動を伝える波を[[S波|えすは]]という。",
+  "初期微動が始まってから主要動が始まるまでの時間を[[初期微動継続時間|しょきびどうけいぞくじかん]]という。",
+  "ある地点での，地震によるゆれの大きさを表すものを[[震度|しんど]]という。",
+  "地震の規模を表すものを[[マグニチュード|まぐにちゅーど]]という。"]},
+ {n:"地震による大地の変化",q:[
+  "地震により大地がもち上がることを[[隆起|りゅうき]]という。",
+  "地震により大地がしずむことを[[沈降|ちんこう]]という。",
+  "地震による海底の地形の急激な変化によって発生する波を[[津波|つなみ]]という。"]},
+ {n:"プレートと断層",q:[
+  "地球の表面をおおっている，厚さ100kmほどの岩盤のことを[[プレート|ぷれーと]]という。",
+  "地層や岩盤に加わった力のために，岩石が破壊され，地層や岩盤がずれたものを[[断層|だんそう]]という。",
+  "くり返しずれが生じる断層のことを[[活断層|かつだんそう]]という。"]}
+]},
+{t:"地層と大地の変化",sec:"§10",h:30,groups:[
+ {n:"風化と流水のはたらき",q:[
+  "かたい岩石が，気温の変化や風雨のはたらきによってもろくなることを[[風化|ふうか]]という。",
+  "かたい岩石が，水のはたらきなどによってけずられることを[[侵食|しんしょく]]という。",
+  "れきや砂などが，川などの水の流れによって下流へと運ばれることを[[運搬|うんぱん]]という。",
+  "れきや砂などが，平野や海岸などの川の流れのゆるやかになったところにたまることを[[堆積|たいせき]]という。"]},
+ {n:"地層と岩石",q:[
+  "長い時間をかけて，堆積物が積み重なってできたものを[[地層|ちそう]]という。",
+  "堆積物が長い年月をかけておし固められ，岩石となったものを[[堆積岩|たいせきがん]]という。",
+  "地層をおし縮める大きな力がはたらいてできた，地層の曲がりを[[しゅう曲|しゅうきょく]]という。"]},
+ {n:"化石と地質年代",q:[
+  "生物の死がいや巣穴などが土砂にうめられ，長い年月をかけてできたものを[[化石|かせき]]という。",
+  "地層が堆積した当時の環境がわかる化石を[[示相化石|しそうかせき]]という。",
+  "地層が堆積した年代がわかる化石を[[示準化石|しじゅんかせき]]という。",
+  "生物の移り変わりをもとに決めた年代を[[地質年代|ちしつねんだい]]という。"]}
+]},
+{t:"電流の性質",sec:"§11",h:228,groups:[
+ {n:"回路",q:[
+  "電流が流れる道筋のことを[[回路|かいろ]]という。",
+  "複数の抵抗が1本の道筋でつながっている回路を[[直列回路|ちょくれつかいろ]]といい，枝分かれした道筋でつながっている回路を[[並列回路|へいれつかいろ]]という。",
+  "電気用図記号で回路を表したものを[[回路図|かいろず]]という。"]},
+ {n:"電流と電圧",q:[
+  "電流の大きさを表す単位には[[アンペア(A)|あんぺあ]]が使われる。",
+  "回路に電流を流そうとするはたらきを[[電圧|でんあつ]]という。",
+  "電圧の大きさを表す単位には[[ボルト(V)|ぼると]]が使われる。",
+  "電熱線を流れる電流の大きさは電熱線の両端に加わる電圧の大きさに比例する，という関係を[[オームの法則|おーむのほうそく]]という。"]},
+ {n:"抵抗",q:[
+  "電流の流れにくさのことを[[電気抵抗(抵抗)|でんきていこう|ていこう]]という。",
+  "抵抗の大きさを表す単位には[[オーム(Ω)|おーむ]]が使われる。",
+  "電流を通しやすい物質を[[導体|どうたい]]という。",
+  "電流をほとんど通さない物質を[[不導体(絶縁体)|ふどうたい|ぜつえんたい]]という。"]},
+ {n:"電力と熱量",q:[
+  "電気器具が，熱や光，音を出したり，物体を動かしたりするときの能力を表すものを[[電力|でんりょく]]という。",
+  "電力を表す単位には[[ワット(W)|わっと]]が使われる。",
+  "電熱線などで発生した熱の量を[[熱量|ねつりょう]]という。",
+  "熱量を表す単位には[[ジュール(J)|じゅーる]]が使われる。",
+  "電熱線などで消費された電気エネルギーを[[電力量|でんりょくりょう]]という。"]}
+]},
+{t:"電流と磁界・静電気",sec:"§12・§13",h:328,groups:[
+ {n:"磁力と磁界",q:[
+  "磁石にほかの磁石を近づけると発生する，引き合ったりしりぞけ合ったりする力を[[磁力|じりょく]]という。",
+  "磁力がはたらく空間を[[磁界|じかい]]という。",
+  "磁界の中に磁針を置いたとき，磁針のN極が指す向きを[[磁界の向き|じかいのむき]]という。",
+  "磁界のようすを表した線を[[磁力線|じりょくせん]]という。"]},
+ {n:"電磁誘導と直流",q:[
+  "コイルの内部の磁界が変化すると，コイルに電流を流そうとする電圧が生じる現象を[[電磁誘導|でんじゆうどう]]という。",
+  "電磁誘導の際に流れる電流を[[誘導電流|ゆうどうでんりゅう]]という。",
+  "一定の向きに流れる電流を[[直流|ちょくりゅう]]という。"]},
+ {n:"交流と周波数",q:[
+  "向きが周期的に変化している電流を[[交流|こうりゅう]]という。",
+  "1秒あたりの波のくり返しの数を[[周波数|しゅうはすう]]という。",
+  "周波数の単位には[[ヘルツ(Hz)|へるつ]]が使われる。"]},
+ {n:"静電気",q:[
+  "異なる物質どうしをこすり合わせたときに生じる＋や－の電気のことを[[静電気|せいでんき]]という。",
+  "物体が静電気を帯びることを[[帯電|たいでん]]という。",
+  "帯電していた電気が空間を移動する現象を[[放電|ほうでん]]という。",
+  "気圧を低くした空間に電流が流れる現象を[[真空放電|しんくうほうでん]]という。"]},
+ {n:"陰極線と電子",q:[
+  "真空放電の際に生じる電子の流れを[[陰極線|いんきょくせん]]という。",
+  "電流の正体である－の電気を帯びた小さな粒子を[[電子|でんし]]という。"]}
+]},
+{t:"物質のなりたちと化学変化",sec:"§14〜§16",h:15,groups:[
+ {n:"分解と原子",q:[
+  "1種類の物質が2種類以上の別の物質に分かれる変化を[[分解|ぶんかい]]という。",
+  "もとの物質とはちがう別の物質ができる変化を[[化学変化(化学反応)|かがくへんか|かがくはんのう]]という。",
+  "物質に電流を流して分解することを[[電気分解|でんきぶんかい]]という。",
+  "それ以上分割することのできない最小の粒子を[[原子|げんし]]という。"]},
+ {n:"分子と化学式",q:[
+  "原子の種類ごとに番号をつけて並べて整理した表を[[周期表|しゅうきひょう]]という。",
+  "いくつかの原子が結びついた粒子を[[分子|ぶんし]]という。",
+  "1種類の原子だけでできている物質を[[単体|たんたい]]という。",
+  "2種類以上の原子でできている物質を[[化合物|かごうぶつ]]という。",
+  "物質を原子の記号を使って表したものを[[化学式|かがくしき]]という。"]},
+ {n:"化合と化学反応式",q:[
+  "2種類以上の物質が結びついて新しい物質ができる化学変化を[[化合|かごう]]という。",
+  "化合によってできた物質を[[化合物|かごうぶつ]]という。",
+  "化学変化を化学式で表した式を[[化学反応式|かがくはんのうしき]]という。"]},
+ {n:"酸化と還元",q:[
+  "物質が酸素と化合することを[[酸化|さんか]]という。",
+  "酸化によってできた物質を[[酸化物|さんかぶつ]]という。",
+  "光や熱を出しながら激しく酸化することを[[燃焼|ねんしょう]]という。",
+  "酸化物が酸素をうばわれる化学変化を[[還元|かんげん]]という。"]},
+ {n:"質量と熱の出入り",q:[
+  "化学変化において，反応の前後で物質全体の質量が変わらないことを[[質量保存の法則|しつりょうほぞんのほうそく]]という。",
+  "化学変化のときに温度が上がる反応を[[発熱反応|はつねつはんのう]]という。",
+  "化学変化のときに温度が下がる反応を[[吸熱反応|きゅうねつはんのう]]という。"]}
+]},
+{t:"生物と細胞",sec:"§17",h:100,groups:[
+ {n:"細胞のつくり",q:[
+  "動物の細胞にも植物の細胞にも1個ある，染色液によく染まるまるいものを[[核|かく]]という。",
+  "細胞の細胞壁と核以外の部分をまとめて[[細胞質|さいぼうしつ]]という。",
+  "細胞を包んでいるものを[[細胞膜|さいぼうまく]]という。",
+  "植物の細胞で細胞膜の外側を囲むものを[[細胞壁|さいぼうへき]]という。"]},
+ {n:"植物の細胞と単細胞生物",q:[
+  "植物の細胞にある，光合成を行うものを[[葉緑体|ようりょくたい]]という。",
+  "植物の細胞にある，細胞の活動にともなってできた物質や水が入っているものを[[液胞|えきほう]]という。",
+  "1個の細胞からなる生物を[[単細胞生物|たんさいぼうせいぶつ]]という。",
+  "多くの細胞からなる生物を[[多細胞生物|たさいぼうせいぶつ]]という。"]},
+ {n:"組織と器官",q:[
+  "多細胞生物のからだの中で，形やはたらきが同じ細胞が集まってできるものを[[組織|そしき]]という。",
+  "いくつかの組織が集まって1つのまとまった形をもち，特定のはたらきをする部分を[[器官|きかん]]という。",
+  "いくつかの器官が集まって[[個体|こたい]]がつくられている。"]}
+]},
+{t:"消化・呼吸と血液",sec:"§18",h:345,groups:[
+ {n:"消化と消化酵素",q:[
+  "有機物の消化を助ける物質を[[消化酵素|しょうかこうそ]]という。",
+  "歯でかみくだかれたり，消化液によって分解されたりすることによって，食物が吸収されやすい物質になる一連の流れを[[消化|しょうか]]という。",
+  "デンプンを分解する消化酵素を[[アミラーゼ|あみらーぜ]]という。",
+  "タンパク質を分解する消化酵素を[[ペプシン|ぺぷしん]]という。"]},
+ {n:"吸収と呼吸",q:[
+  "物質が，血管などの中にとりこまれることを[[吸収|きゅうしゅう]]という。",
+  "小腸のかべの表面にある細かい突起を[[柔毛|じゅうもう]]という。",
+  "酸素をとり入れ，二酸化炭素を出すはたらきのことを[[呼吸|こきゅう]]という。"]},
+ {n:"血液と血管",q:[
+  "酸素を多くふくむ血液を[[動脈血|どうみゃくけつ]]という。",
+  "二酸化炭素を多くふくむ血液を[[静脈血|じょうみゃくけつ]]という。",
+  "心臓から送り出される血液が流れる血管を[[動脈|どうみゃく]]という。",
+  "心臓へもどってくる血液が流れる血管を[[静脈|じょうみゃく]]という。",
+  "動物のからだの組織に網の目のように張りめぐらされている細い血管のことを[[毛細血管|もうさいけっかん]]という。"]},
+ {n:"血液の成分",q:[
+  "血液の中で，酸素を運ぶはたらきをもつ成分を[[赤血球|せっけっきゅう]]という。",
+  "血液の中で，細菌を食べるなどしてからだを守る成分を[[白血球|はっけっきゅう]]という。",
+  "血液の中で，養分や不要な物質などを運んでいる透明な液体の成分を[[血しょう|けっしょう]]という。",
+  "血しょうが毛細血管のかべからしみ出して細胞のまわりを満たしたものを[[組織液|そしきえき]]という。"]}
+]},
+{t:"排出と神経",sec:"§19",h:290,groups:[
+ {n:"尿と感覚器官",q:[
+  "じん臓において血液中からとり除かれ，体外に排出される不要な物質を[[尿|にょう]]という。",
+  "動物がにおいや光，音などのさまざまな刺激を受けとる器官を[[感覚器官|かんかくきかん]]という。",
+  "感覚器官で受けとった刺激の信号を脳やせきずいに伝えたり，脳やせきずいからの信号を運動器官に伝えたりするものを[[神経|しんけい]]という。"]},
+ {n:"中枢神経と末しょう神経",q:[
+  "多くの神経が集まっている脳やせきずいを[[中枢神経|ちゅうすうしんけい]]という。",
+  "中枢神経から枝分かれして全身に広がる神経を[[末しょう神経|まっしょうしんけい]]という。",
+  "末しょう神経の中で，感覚器官から中枢神経へ信号を伝える神経を[[感覚神経|かんかくしんけい]]という。",
+  "末しょう神経の中で，中枢神経から運動器官へ信号を伝える神経を[[運動神経|うんどうしんけい]]という。"]},
+ {n:"神経系と反射",q:[
+  "信号の伝達や命令などを行う中枢神経，末しょう神経をまとめて[[神経系|しんけいけい]]という。",
+  "刺激を受けて意識とは無関係に決まった反応が起こることを[[反射|はんしゃ]]という。"]}
+]},
+{t:"動物の分類と生物の進化",sec:"§20",h:150,groups:[
+ {n:"背骨と子のうまれ方",q:[
+  "背骨のある動物を[[セキツイ動物|せきついどうぶつ]]という。",
+  "背骨のない動物を[[無セキツイ動物|むせきついどうぶつ]]という。",
+  "親が卵をうみ，卵から子がかえるような，子のうまれ方を[[卵生|らんせい]]という。",
+  "母体内である程度育ってから子がうまれるような，子のうまれ方を[[胎生|たいせい]]という。"]},
+ {n:"体温",q:[
+  "体温を一定に保つしくみをもつ動物を[[恒温動物|こうおんどうぶつ]]という。",
+  "環境の温度の変化にともなって体温が変化する動物を[[変温動物|へんおんどうぶつ]]という。"]},
+ {n:"無セキツイ動物",q:[
+  "昆虫類や甲殻類のからだをおおっている殻のことを[[外骨格|がいこっかく]]という。",
+  "無セキツイ動物の中で，昆虫類や甲殻類など，からだとあしに節がある動物を[[節足動物|せっそくどうぶつ]]という。",
+  "無セキツイ動物の中で，マイマイやアサリ，タコ，イカなどのなかまを[[軟体動物|なんたいどうぶつ]]という。"]},
+ {n:"進化",q:[
+  "生物が，長い年月をかけて代を重ねる間に変化することを[[進化|しんか]]という。",
+  "現在の形やはたらきが異なっていても，もとは同じ器官であったと考えられるものを[[相同器官|そうどうきかん]]という。"]}
+]},
+{t:"気象観測と前線",sec:"§21",h:205,groups:[
+ {n:"気象の要素",q:[
+  "大気中で起こるさまざまな現象を[[気象|きしょう]]という。",
+  "大気の温度のことを[[気温|きおん]]といい，地上から1.5mの高さのところで直射日光に当てないようにしてはかる。",
+  "空気のしめりけの度合いを[[湿度|しつど]]という。",
+  "空気の重さによる圧力を[[気圧|きあつ]]という。"]},
+ {n:"風と等圧線",q:[
+  "風のふいてくる方向を[[風向|ふうこう]]という。",
+  "風の強さを[[風力|ふうりょく]]という。",
+  "気圧の値の等しい地点を結んだなめらかな曲線のことを[[等圧線|とうあつせん]]という。"]},
+ {n:"高気圧と気団",q:[
+  "中心部が周辺部より気圧が高い部分を[[高気圧|こうきあつ]]という。",
+  "中心部が周辺部より気圧が低い部分を[[低気圧|ていきあつ]]という。",
+  "気温や湿度が一様な空気のかたまりを[[気団|きだん]]という。"]},
+ {n:"前線",q:[
+  "気温や湿度など性質の異なる空気のかたまりが接したときにできる境の面を[[前線面|ぜんせんめん]]という。",
+  "前線面と地表面が接した部分を[[前線|ぜんせん]]という。",
+  "寒気が暖気の下にもぐりこみ，暖気をおし上げながら進んでいく前線を[[寒冷前線|かんれいぜんせん]]という。",
+  "暖気が寒気の上にはい上がり，寒気をおしやりながら進んでいく前線を[[温暖前線|おんだんぜんせん]]という。",
+  "寒気と暖気がぶつかり合いほとんど位置が動かない前線を[[停滞前線|ていたいぜんせん]]という。"]}
+]},
+{t:"日本の天気，雲と水蒸気",sec:"§22",h:225,groups:[
+ {n:"日本付近の風と高気圧",q:[
+  "日本列島付近の上空を西から東へ向かう大気の動きを[[偏西風|へんせいふう]]という。",
+  "大陸と海洋のあたたまり方のちがいによって生じる，季節に特徴的な風を[[季節風|きせつふう]]という。",
+  "夏に日本の南東で成長する高気圧を[[太平洋高気圧|たいへいようこうきあつ]]という。",
+  "昼は海から陸に，夜は陸から海に向かってふく風を[[海陸風|かいりくふう]]という。"]},
+ {n:"季節の天気",q:[
+  "冬の時期にユーラシア大陸が冷やされることで，大陸上で成長する高気圧を[[シベリア高気圧|しべりあこうきあつ]]という。",
+  "春と秋によく見られる，日本列島付近を次々に通る高気圧を[[移動性高気圧|いどうせいこうきあつ]]という。",
+  "日本列島付近で停滞前線が停滞し雨やくもりの日が多くなる，夏の前の時期のことを[[つゆ(梅雨)|つゆ|ばいう]]という。",
+  "熱帯低気圧のうちで，中心付近の最大風速が17.2m/s以上のものを[[台風|たいふう]]という。"]},
+ {n:"水蒸気と霧",q:[
+  "1m³の空気がふくむことのできる限度の水蒸気の質量を[[飽和水蒸気量|ほうわすいじょうきりょう]]という。",
+  "水蒸気が凝結し始めるときの温度を[[露点|ろてん]]という。",
+  "空気中の水蒸気が水滴に変わって，地表付近の空気中にうかんでいる現象を[[霧|きり]]という。"]}
+]},
+{t:"運動と力",sec:"§23",h:265,groups:[
+ {n:"速さと落下",q:[
+  "ごく短い時間に移動した距離をもとに求める，刻々と変化する速さのことを[[瞬間の速さ|しゅんかんのはやさ]]という。",
+  "区間全体を一定の速さで移動したと考え，移動距離をかかった時間でわって求める速さのことを[[平均の速さ|へいきんのはやさ]]という。",
+  "物体が垂直に落下する運動を[[自由落下|じゆうらっか]]という。"]},
+ {n:"摩擦力と垂直抗力",q:[
+  "物体の接触面で運動をさまたげる方向にはたらく力を[[摩擦力|まさつりょく]]という。",
+  "一定の速さで一直線上を進む物体の運動を[[等速直線運動|とうそくちょくせんうんどう]]という。",
+  "ある面の上に物体を置いたとき，その面から垂直に物体にはたらく力を[[垂直抗力|すいちょくこうりょく]]という。"]},
+ {n:"力の合成と分解",q:[
+  "2つの力と同じはたらきをする1つの力を，2つの力の[[合力|ごうりょく]]という。",
+  "2つの力と同じはたらきをする1つの力を求めることを[[力の合成|ちからのごうせい]]という。",
+  "ある力を2つの力に分けることを[[力の分解|ちからのぶんかい]]という。",
+  "ある力を2つの力に分けたときの2力を，もとの力の[[分力|ぶんりょく]]という。"]},
+ {n:"運動の法則",q:[
+  "力がはたらいていない場合やはたらく力がつり合っている場合，静止している物体は静止し続け，動いている物体は等速直線運動を続けることを[[慣性の法則|かんせいのほうそく]]という。",
+  "1つの物体が他の物体に力を加えた場合，同時に同じ大きさの逆向きの力を受けることを[[作用・反作用の法則|さようはんさようのほうそく]]という。"]}
+]},
+{t:"エネルギーと仕事",sec:"§24",h:48,groups:[
+ {n:"エネルギーの種類",q:[
+  "他の物体を動かしたり，変形させたりすることができる物体は，[[エネルギー|えねるぎー]]をもっているという。",
+  "運動している物体がもつエネルギーを[[運動エネルギー|うんどうえねるぎー]]という。",
+  "高い位置にある物体がもつエネルギーを[[位置エネルギー|いちえねるぎー]]という。"]},
+ {n:"力学的エネルギー",q:[
+  "物体のもつ位置エネルギーと運動エネルギーの和を[[力学的エネルギー|りきがくてきえねるぎー]]という。",
+  "ある物体のもつ力学的エネルギーが一定に保たれることを[[力学的エネルギーの保存|りきがくてきえねるぎーのほぞん]]という。"]},
+ {n:"仕事と仕事率",q:[
+  "物体に加えた力と，力の向きに移動させた距離の積を[[仕事|しごと]]という。",
+  "仕事を表す単位には[[ジュール(J)|じゅーる]]が使われる。",
+  "1秒間あたりの仕事の量を[[仕事率|しごとりつ]]といい，単位には[[ワット(W)|わっと]]を用いる。",
+  "ある状態から別の状態になるまでの仕事の大きさは，仕事の方法を変えても同じであることを[[仕事の原理|しごとのげんり]]という。"]}
+]},
+{t:"イオンと電池・酸とアルカリ",sec:"§25・§26",h:180,groups:[
+ {n:"電解質と原子核",q:[
+  "水にとかしたときに電流が流れる物質を[[電解質|でんかいしつ]]という。",
+  "水にとかしても電流が流れない物質を[[非電解質|ひでんかいしつ]]という。",
+  "原子の中心にあり，陽子と中性子からできているものを[[原子核|げんしかく]]という。"]},
+ {n:"原子のつくり",q:[
+  "原子核のまわりにある，－の電気を帯びたものを[[電子|でんし]]という。",
+  "原子の中心にある原子核の一部で，＋の電気を帯びたものを[[陽子|ようし]]という。",
+  "原子の中心にある原子核の一部で，電気を帯びていないものを[[中性子|ちゅうせいし]]という。"]},
+ {n:"イオン",q:[
+  "原子が電気を帯びたものを[[イオン|いおん]]という。",
+  "原子が電子を失い＋の電気を帯びたものを[[陽イオン|よういおん]]という。",
+  "原子が電子を受けとり－の電気を帯びたものを[[陰イオン|いんいおん]]という。",
+  "イオンを表す記号を[[イオン式|いおんしき]]という。",
+  "物質が水にとけて，陽イオンと陰イオンにばらばらに分かれることを[[電離|でんり]]という。"]},
+ {n:"電池",q:[
+  "電解質の水溶液に2種類の金属を入れ，その金属と金属の間に電圧を生じさせるものを[[電池|でんち]]という。",
+  "電圧が低下した蓄電池に外部から逆向きの電流を流して電圧をもとにもどす操作を[[充電|じゅうでん]]という。",
+  "水の電気分解と逆の化学変化を利用する電池を[[燃料電池|ねんりょうでんち]]という。"]},
+ {n:"酸とアルカリ",q:[
+  "水溶液にしたとき，電離して水素イオンを生じる化合物を[[酸|さん]]という。",
+  "水溶液にしたとき，電離して水酸化物イオンを生じる化合物を[[アルカリ|あるかり]]という。",
+  "酸性・アルカリ性の強さの程度を表すのに[[pH|ぴーえいち|ぴーえっち|ぺーはー]]が用いられる。",
+  "水素イオンと水酸化物イオンとが結びついて水をつくり，たがいの性質を打ち消し合う反応を[[中和|ちゅうわ]]という。",
+  "酸の陰イオンとアルカリの陽イオンとが結びついてできた物質を[[塩|えん]]という。"]}
+]},
+{t:"生物の成長と生殖",sec:"§27",h:120,groups:[
+ {n:"細胞分裂と遺伝子",q:[
+  "1個の細胞が2つに分かれて2個の細胞になることを[[細胞分裂|さいぼうぶんれつ]]という。",
+  "細胞分裂中に，核の中に見られるひものようなものを[[染色体|せんしょくたい]]という。",
+  "生物の形や性質などのことを[[形質|けいしつ]]という。",
+  "染色体にある，生物の形質を決めるものを[[遺伝子|いでんし]]という。",
+  "からだをつくる細胞が分裂する細胞分裂を[[体細胞分裂|たいさいぼうぶんれつ]]という。"]},
+ {n:"生殖と花粉管",q:[
+  "生物が子をつくることを[[生殖|せいしょく]]という。",
+  "花粉がめしべの柱頭についたとき，花粉から柱頭の内部へとのびるものを[[花粉管|かふんかん]]という。",
+  "花粉管の中にある細胞を[[精細胞|せいさいぼう]]という。",
+  "胚珠の中にある細胞を[[卵細胞|らんさいぼう]]という。"]},
+ {n:"受精と発生",q:[
+  "精細胞と卵細胞とが1つになることを[[受精|じゅせい]]という。",
+  "受精によってつくられる細胞を[[受精卵|じゅせいらん]]という。",
+  "精細胞や卵細胞は，生殖のための特別な細胞であることから，[[生殖細胞|せいしょくさいぼう]]とよばれる。",
+  "将来，植物のからだになるつくりを備えている，受精卵が細胞分裂をくり返したもの，あるいは，動物で受精卵が細胞分裂を始めてから，自分で食物をとることのできる個体となる前までのものを[[胚|はい]]という。",
+  "受精卵が胚になり，からだのつくりとはたらきが完成していく過程を[[発生|はっせい]]という。"]},
+ {n:"有性生殖と無性生殖",q:[
+  "生殖細胞が受精することによって子をつくる生殖を[[有性生殖|ゆうせいせいしょく]]という。",
+  "受精を行わずに子をつくる生殖を[[無性生殖|むせいせいしょく]]という。",
+  "動物の雌がつくる生殖細胞を[[卵|らん]]という。"]},
+ {n:"精子と減数分裂",q:[
+  "動物の雄がつくる生殖細胞を[[精子|せいし]]という。",
+  "有性生殖において，生殖細胞がつくられるときに染色体の数が半分になる細胞分裂のことを[[減数分裂|げんすうぶんれつ]]という。",
+  "無性生殖における親と子のように，起源が同じで，同一の遺伝子をもつ個体の集団を[[クローン|くろーん]]という。"]}
+]},
+{t:"遺伝",sec:"§28",h:310,groups:[
+ {n:"遺伝と純系",q:[
+  "親の形質が子や孫に伝わることを[[遺伝|いでん]]という。",
+  "親，子，孫と自家受粉をくり返しても，その形質がすべて親と同じである場合，これらを[[純系|じゅんけい]]という。",
+  "対をなす形質を[[対立形質|たいりつけいしつ]]という。",
+  "対になって存在する遺伝子が，減数分裂のときに分かれて別々の生殖細胞に入ることを[[分離の法則|ぶんりのほうそく]]という。"]},
+ {n:"優性と劣性",q:[
+  "対立形質のそれぞれについての純系を交配したとき，子に現れる形質を[[優性|ゆうせい]]の形質という。",
+  "対立形質のそれぞれについての純系を交配したとき，子に現れない形質を[[劣性|れっせい]]の形質という。",
+  "遺伝子の本体である物質を[[DNA(デオキシリボ核酸)|でぃーえぬえー|でぃえぬえー|でおきしりぼかくさん]]という。"]}
+]},
+{t:"宇宙",sec:"§29",h:250,groups:[
+ {n:"太陽と銀河",q:[
+  "地球から直接観測でき，地球の環境を支えるエネルギー源としての役割をもっている恒星は[[太陽|たいよう]]である。",
+  "自ら熱や光を出す天体を[[恒星|こうせい]]という。",
+  "数億～数千億の恒星がつくる大集団を[[銀河|ぎんが]]という。",
+  "太陽系をふくむ銀河のことを[[銀河系|ぎんがけい]]という。"]},
+ {n:"惑星と太陽系",q:[
+  "恒星のまわりを回っている，ある程度の質量と大きさをもった天体のことを[[惑星|わくせい]]という。",
+  "太陽とその周辺を回っている惑星や小天体の集まりを[[太陽系|たいようけい]]という。",
+  "太陽の表面にある温度の低い部分を[[黒点|こくてん]]という。"]},
+ {n:"自転・公転と惑星",q:[
+  "天体が，中心を通る線を軸にして，自分自身で回転することを[[自転|じてん]]という。",
+  "天体が，他の天体のまわりを回転することを[[公転|こうてん]]という。",
+  "水星や金星，地球などの，小型で密度が大きい惑星を[[地球型惑星|ちきゅうがたわくせい]]という。",
+  "木星や土星，天王星などの，大型で密度が小さい惑星を[[木星型惑星|もくせいがたわくせい]]という。"]},
+ {n:"太陽系の小さな天体",q:[
+  "惑星のまわりを公転する天体を[[衛星|えいせい]]という。",
+  "太陽のまわりを公転する小天体を[[小惑星|しょうわくせい]]という。",
+  "海王星より外側を公転する天体を[[太陽系外縁天体|たいようけいがいえんてんたい]]という。",
+  "太陽に接近する際，長い尾を見せる天体を[[すい星|すいせい]]という。"]}
+]},
+{t:"地球の運動と月・惑星",sec:"§30・§31",h:60,groups:[
+ {n:"天球と南中",q:[
+  "天体の位置や動きを表す見かけ上の球形の天井を[[天球|てんきゅう]]という。",
+  "地球の北極と南極を結ぶ軸を[[地軸|ちじく]]という。",
+  "天体が子午線を通過することを[[南中|なんちゅう]]という。",
+  "天体が子午線を通過するときの高度を[[南中高度|なんちゅうこうど]]という。"]},
+ {n:"日周運動と年周運動",q:[
+  "地球の自転によって，天体が1日1回地球のまわりを回るように見える動きを[[日周運動|にっしゅううんどう]]という。",
+  "地球の公転によって生じる天体の見かけの動きを[[年周運動|ねんしゅううんどう]]という。",
+  "天球上の太陽の通り道を[[黄道|こうどう]]という。"]},
+ {n:"月と惑星",q:[
+  "太陽に月が重なって，かくされる現象を[[日食|にっしょく]]という。",
+  "月が地球のかげに入る現象を[[月食|げっしょく]]という。",
+  "地球より内側を公転している惑星を[[内惑星|ないわくせい]]という。",
+  "地球より外側を公転している惑星を[[外惑星|がいわくせい]]という。"]}
+]},
+{t:"科学技術と自然",sec:"§32・§33",h:140,groups:[
+ {n:"いろいろなエネルギー",q:[
+  "物体の温度を上げたり，物体の体積を大きくしたりする，熱がもっているエネルギーを[[熱エネルギー|ねつえねるぎー]]という。",
+  "光電池に電流を生じさせたり，ものをあたためたりする，光がもっているエネルギーを[[光エネルギー|ひかりえねるぎー]]という。",
+  "物体を振動させる，音がもっているエネルギーを[[音エネルギー|おとえねるぎー]]という。"]},
+ {n:"熱の伝わり方",q:[
+  "熱源から直接熱が伝わることを[[伝導|でんどう]]という。",
+  "あたためられた気体や液体が移動して，全体に熱が伝わるような熱の伝わり方を[[対流|たいりゅう]]という。",
+  "光源や熱源からはなれていても，光が当たっている面が熱くなるような熱の伝わり方を[[放射|ほうしゃ]]という。"]},
+ {n:"エネルギーと科学技術",q:[
+  "エネルギー全体の量が，エネルギーの移り変わりの前後で一定に保たれることを[[エネルギーの保存|えねるぎーのほぞん]]という。",
+  "α線，β線，γ線，X線などを[[放射線|ほうしゃせん]]という。",
+  "計算だけでなく，文字や絵，映像などの処理が可能な機械のことを[[コンピュータ|こんぴゅーた|こんぴゅーたー]]という。",
+  "イギリスのワットが改良し，産業革命に大きな役割を果たした動力源を[[蒸気機関|じょうききかん]]という。",
+  "社会に必要なさまざまな天然資源の循環を可能にし，再利用の割合をより高めた社会を[[循環型社会|じゅんかんがたしゃかい]]という。"]},
+ {n:"生態系と食物連鎖",q:[
+  "ある地域に生息するすべての生物と，その地域の水や空気，土などの生物以外の環境とを総合的にとらえたものを[[生態系|せいたいけい]]という。",
+  "生物どうしの食べる，食べられるという鎖のようにつながった一連の関係を[[食物連鎖|しょくもつれんさ]]という。",
+  "網の目のようにつながっている，生物どうしの食べる，食べられるという関係を[[食物網|しょくもつもう]]という。"]},
+ {n:"生産者・消費者・分解者",q:[
+  "無機物から有機物をつくる生物を[[生産者|せいさんしゃ]]という。",
+  "植物やほかの動物を食べることで養分をとり入れる生物を[[消費者|しょうひしゃ]]という。",
+  "消費者のなかで生物の死がいや動物の排出物などの有機物を養分としてとり入れ，無機物に分解する生物を[[分解者|ぶんかいしゃ]]という。"]},
+ {n:"微生物と地球温暖化",q:[
+  "カビやキノコなどのなかまを[[菌類|きんるい]]という。",
+  "乳酸菌や大腸菌などのなかまを[[細菌類|さいきんるい]]という。",
+  "菌類，細菌類をふくむ小さな生物をまとめて[[微生物|びせいぶつ]]という。",
+  "近年，地球の平均気温が少しずつ上昇する傾向にあることを[[地球温暖化|ちきゅうおんだんか]]という。"]}
+]}
+];
+
+
+/* 章アイコン（線画） */
+const ICONS=[
+ '<path d="M4 20H26L54 32M4 44H26L54 32"/><ellipse cx="26" cy="32" rx="5" ry="20"/>',
+ '<path d="M32 4V11L20 15L44 21L20 27L44 33L20 39L32 43V48"/><rect x="22" y="48" width="20" height="11" rx="2"/>',
+ '<path d="M32 8V54M14 54H50M12 20H52M12 20L5 36H19ZM52 20L45 36H59Z"/>',
+ '<path d="M20 6V26L8 56H56L44 26V6M15 6H49M13 44H51"/>',
+ '<path d="M10 54C10 26 30 10 56 9C56 34 38 54 10 54ZM10 54L40 24"/>',
+ '<path d="M32 60V20M32 46C22 46 15 40 13 31C23 31 30 37 32 46M32 34C42 34 49 28 51 19C41 19 34 25 32 34M32 20C28 14 30 8 32 4C34 8 36 14 32 20"/>',
+ '<path d="M4 58L24 24H40L60 58ZM28 15L25 6M32 14V3M36 15L39 6"/>',
+ '<rect x="6" y="10" width="52" height="46" rx="2"/><path d="M6 24C20 19 40 29 58 22M6 36C22 31 38 41 58 34M6 47C20 44 40 51 58 45"/>',
+ '<path d="M27 12H8V54H56V12H37M27 4V20M37 8V16"/><circle cx="32" cy="54" r="7"/>',
+ '<path d="M14 6V32A18 18 0 0 0 50 32V6H38V32A6 6 0 0 1 26 32V6ZM14 16H26M38 16H50"/>',
+ '<circle cx="20" cy="22" r="9"/><circle cx="44" cy="22" r="9"/><circle cx="32" cy="44" r="11"/><path d="M25 29L28 35M39 29L36 35"/>',
+ '<rect x="8" y="12" width="48" height="40" rx="12"/><circle cx="32" cy="32" r="8"/>',
+ '<path d="M32 54C14 40 6 30 10 20C14 10 26 10 32 20C38 10 50 10 54 20C58 30 50 40 32 54Z"/>',
+ '<circle cx="32" cy="14" r="9"/><path d="M32 23V58M32 32L16 42M32 32L48 42M32 46L20 56M32 46L44 56"/>',
+ '<path d="M6 32C16 18 38 16 48 32C38 48 16 46 6 32ZM48 32L58 22V42Z"/><circle cx="18" cy="30" r="2"/>',
+ '<path d="M16 46H48A10 10 0 0 0 46 26A14 14 0 0 0 20 24A11 11 0 0 0 16 46Z"/>',
+ '<path d="M6 32A26 26 0 0 1 58 32ZM32 32V52A5 5 0 0 1 22 52M32 6V10"/>',
+ '<rect x="6" y="24" width="20" height="16" rx="2"/><path d="M26 32H56M48 24L56 32L48 40"/>',
+ '<path d="M36 4L14 36H30L26 60L50 26H34Z"/>',
+ '<rect x="6" y="18" width="46" height="28" rx="4"/><path d="M52 26H58V38H52M16 32H26M21 27V37M34 32H42"/>',
+ '<circle cx="22" cy="32" r="14"/><circle cx="42" cy="32" r="14"/><circle cx="22" cy="32" r="3"/><circle cx="42" cy="32" r="3"/>',
+ '<path d="M20 4C20 20 44 22 44 32S20 44 20 60M44 4C44 20 20 22 20 32S44 44 44 60M24 12H40M24 52H40"/>',
+ '<circle cx="32" cy="32" r="13"/><ellipse cx="32" cy="32" rx="28" ry="9" transform="rotate(-20 32 32)"/>',
+ '<path d="M40 8A24 24 0 1 0 56 44A20 20 0 1 1 40 8Z"/>',
+ '<circle cx="32" cy="32" r="24"/><path d="M8 32H56M32 8C22 20 22 44 32 56M32 8C42 20 42 44 32 56"/>'
+];
+function icon(ci){return `<svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[ci]}</g></svg>`}
+
+/* ===== 準備 ===== */
+function parse(s){const p=s.split(/\[\[(.+?)\]\]/),seg=[];p.forEach((x,i)=>{if(i%2===0){if(x)seg.push({t:x})}else{const [d,...r]=x.split('|');seg.push({b:true,d,r})}});return seg}
+CH.forEach((c,ci)=>{c.groups.forEach((g,gi)=>{g.items=g.q.map((s,qi)=>({id:`${ci}-${gi}-${qi}`,seg:parse(s),ci,gi}))});c.items=c.groups.flatMap(g=>g.items);c.words=c.items.reduce((a,it)=>a+it.seg.filter(s=>s.b).length,0)});
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const blanks=it=>it.seg.filter(s=>s.b);
+const norm=s=>(s||'').replace(/\s/g,'');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+const KEY='rika-anki-lab-v1';
+let S={g:{},a:{},m:{},cfg:null,sound:true};
+try{const x=JSON.parse(localStorage.getItem(KEY));if(x&&typeof x==='object')S=Object.assign(S,x)}catch(e){}
+if(!S.m||typeof S.m!=='object')S.m={};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const gKey=(ci,gi)=>`${ci}-${gi}`;
+const gDone=(ci,gi)=>!!(S.g[gKey(ci,gi)]&&S.g[gKey(ci,gi)].done);
+const groupsDone=ci=>CH[ci].groups.filter((g,gi)=>gDone(ci,gi)).length;
+const unlocked=ci=>groupsDone(ci)===CH[ci].groups.length;
+const perfect=ci=>!!(S.a[ci]&&S.a[ci].perfect);
+function chSteps(ci){const c=CH[ci];return{total:c.groups.length+1,done:groupsDone(ci)+(perfect(ci)?1:0)}}
+const stat=it=>S.m[it.id]||{w:0,c:0};
+
+/* ===== 音 ===== */
+let AC=null;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)()}catch(e){AC=null}}if(AC&&AC.state==='suspended')AC.resume();return AC}
+function tone(f,t0,dur,type='triangle',vol=.16){const a=ac();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.value=f;const t=a.currentTime+t0;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+.015);g.gain.exponentialRampToValueAtTime(.0008,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.05)}
+function sfx(k){if(!S.sound)return;
+ if(k==='ok'){tone(880,0,.12);tone(1320,.09,.22)}
+ else if(k==='ng'){tone(196,0,.26,'square',.07);tone(165,.12,.3,'square',.06)}
+ else if(k==='fan'){[523,659,784,1047].forEach((f,i)=>tone(f,i*.12,.25,'triangle',.18));[523,659,784,1047].forEach(f=>tone(f,.55,1.1,'triangle',.12));tone(1568,.55,1.1,'sine',.08)}
+ else if(k==='tap'){tone(1200,0,.03,'sine',.03)}}
+
+/* ===== 画面 ===== */
+const main=document.getElementById('main'),htitle=document.getElementById('htitle'),backBtn=document.getElementById('back'),sndBtn=document.getElementById('snd');
+let view={name:'home'};
+function setHeader(html,back){htitle.innerHTML=html;backBtn.hidden=!back}
+function syncSnd(){sndBtn.textContent='効果音 '+(S.sound?'ON':'OFF');sndBtn.setAttribute('aria-pressed',S.sound?'true':'false')}
+function go(name,p={}){view=Object.assign({name},p);render();window.scrollTo(0,0)}
+function render(){
+ syncSnd();
+ if(view.name==='home')return renderHome();
+ if(view.name==='chapter')return renderChapter();
+ if(view.name==='builder')return renderBuilder();
+ if(view.name==='cards')return renderCards();
+ if(view.name==='quiz')return renderQuiz();
+ if(view.name==='result')return renderResult();
+}
+backBtn.onclick=()=>{const v=view.name;if(v==='chapter'||v==='home'||v==='builder')go('home');else if((v==='quiz'||v==='result')&&Q&&Q.ci==null)go('builder');else go('chapter',{ci:view.ci})};
+sndBtn.onclick=()=>{S.sound=!S.sound;save();syncSnd();sfx('tap')};
+
+/* --- ホーム --- */
+function renderHome(){
+ setHeader('<span class="brand">理科<b>暗記</b>ラボ</span>',false);
+ const words=CH.reduce((a,c)=>a+c.words,0);
+ const clear=CH.filter((c,ci)=>perfect(ci)).length;
+ const missAll=CH.reduce((a,c)=>a+c.items.filter(it=>stat(it).w>0).length,0);
+ main.innerHTML=`
+ <section class="hero">
+  <div><div class="eyebrow">重要単語 ${words}語 ／ 全${CH.length}章</div>
+   <h1 class="display">理科の単語を<br><b>赤シート</b>なしで覚えよう！</h1>
+   <p>章を選んで暗記を始めよう。カードで覚えてクイズで確かめる。</p></div>
+  <div class="meter"><div class="n">${clear}<span class="muted" style="font-size:.55em"> / ${CH.length}</span></div><div class="l">満点クリアした章</div></div>
+ </section>
+ <button class="maker" data-act="builder"><span><b>問題をつくる</b><small>範囲・問題数・順番を選んで出題する${missAll?`　<span>間違えたことがある問題 ${missAll}問</span>`:''}</small></span><span class="arw">→</span></button>
+ <ul class="chlist">${CH.map((c,ci)=>{const st=chSteps(ci);return `<li><button class="chrow" data-act="ch" data-ci="${ci}" style="--h:${c.h}">
+   ${perfect(ci)?'<span class="crown">満点</span>':''}
+   <span class="badge chc">${icon(ci)}</span>
+   <span class="nm"><small>第${ci+1}章　${c.sec}　${c.words}語</small>${esc(c.t)}</span>
+   <span class="steps">${Array.from({length:st.total},(_,i)=>`<i class="${i<st.done?'on':''}"></i>`).join('')}<em>${st.done}/${st.total}</em></span>
+  </button></li>`}).join('')}</ul>
+ <div class="foot"><span>記録はこのブラウザに保存される。</span><span id="rst"><button class="linkbtn" data-act="reset1">学習記録をリセットする</button></span></div>`;
+}
+
+/* --- 章ページ --- */
+function renderChapter(){
+ const ci=view.ci,c=CH[ci];
+ setHeader(`第${ci+1}章　${esc(c.t)}`,true);
+ const gd=groupsDone(ci),un=unlocked(ci),best=S.a[ci];
+ main.innerHTML=`
+ <section class="chhead" style="--h:${c.h}">
+  <span class="badge chc">${icon(ci)}</span>
+  <div><div class="eyebrow">第${ci+1}章　${c.sec}　${c.words}語</div><h1 class="display">${esc(c.t)}</h1></div>
+ </section>
+ <section class="mode">
+  <div class="mode-top"><span class="num">1</span><div><h2>暗記カード</h2><p>かくれた赤い単語をタップして答えを確かめる。</p></div><span></span></div>
+  <button class="btn ghost wide" data-act="cards">暗記カードを開く</button>
+ </section>
+ <section class="mode">
+  <div class="mode-top"><span class="num">2</span><div><h2>テーマ別クイズ</h2><p>ひらがなキーボードで空らんをうめる。</p></div><span class="tag ${gd===c.groups.length?'ok':''}">${gd}/${c.groups.length}</span></div>
+  <ul class="glist">${c.groups.map((g,gi)=>{const r=S.g[gKey(ci,gi)];return `<li><button class="grow" data-act="quiz" data-gi="${gi}">
+   <b>${esc(g.n)}</b><small>${g.items.length}問${r?`　ベスト ${r.best}/${g.items.length}`:''}</small>
+   <span class="tag ${r&&r.done?'ok':''}">${r&&r.done?(r.best===g.items.length?'満点':'クリア'):'未挑戦'}</span></button></li>`}).join('')}</ul>
+ </section>
+ <section class="mode">
+  <div class="mode-top"><span class="num">3</span><div><h2>全問クイズ</h2><p>この章の${c.items.length}問がランダムに出る。満点をねらおう！</p></div><span class="tag ${perfect(ci)?'ok':''}">${un?(best?`ベスト ${best.best}/${c.items.length}`:'挑戦できる'):'🔒 ロック中'}</span></div>
+  ${un?`<button class="btn red wide" data-act="all">全問クイズに挑戦する</button>`:
+  `<div class="lock"><span class="muted">テーマ別クイズをすべて解くと挑戦できる。</span>
+   <div><span class="ck ${gd===c.groups.length?'y':''}">${gd===c.groups.length?'✓':'・'}</span>テーマ別クイズをすべて解く（${gd}/${c.groups.length}）</div></div>`}
+ </section>
+ <button class="btn ghost wide" data-act="bfromch">この章の範囲で問題をつくる</button>`;
+}
+
+/* --- 問題をつくる --- */
+let B=null;
+const validKey=k=>{const [a,b]=String(k).split('-').map(Number);return !!(CH[a]&&CH[a].groups[b])};
+function initB(){const d=S.cfg||{};B={sel:new Set(Array.isArray(d.sel)?d.sel.filter(validKey):CH.flatMap((c,ci)=>c.groups.map((g,gi)=>gKey(ci,gi)))),n:d.n||10,order:d.order||'rand',open:new Set()}}
+function poolOf(sel){return CH.flatMap((c,ci)=>c.groups.flatMap((g,gi)=>sel.has(gKey(ci,gi))?g.items:[]))}
+function cfgCount(cfg,pool){return cfg.n==='all'?pool.length:Math.min(cfg.n,pool.length)}
+function buildItems(cfg){
+ const pool=poolOf(new Set(cfg.sel)),n=cfgCount(cfg,pool);
+ if(cfg.order==='seq')return pool.slice(0,n);
+ const r=shuffle(pool);
+ if(cfg.order==='miss')r.sort((a,b)=>(stat(b).w-stat(a).w)||(stat(a).c-stat(b).c));
+ return r.slice(0,n)}
+function renderBuilder(){
+ if(!B)initB();
+ setHeader('問題をつくる',true);
+ const pool=poolOf(B.sel),n=cfgCount(B,pool),missed=pool.filter(it=>stat(it).w>0).length;
+ const ORD=[['rand','ランダム','範囲の中から毎回ちがう順番で出る。'],['seq','順番どおり','教科書の順番で前から出る。'],['miss','間違えた順','間違えた回数が多い問題から出る。']];
+ main.innerHTML=`
+ <section><div class="eyebrow">カスタム問題</div><h1 class="display" style="font-size:clamp(1.45rem,5.5vw,2rem)">範囲と問題数を決めて出題しよう</h1></section>
+ <section class="mode">
+  <div class="sec-h"><h2>1. 範囲</h2><div class="toolbar"><button class="pill-btn" data-act="ball">すべて選ぶ</button><button class="pill-btn" data-act="bnone">すべて外す</button></div></div>
+  <p class="note">章をタップすると章ごと選べる。右側を開くとテーマ単位で選べる。</p>
+  <ul class="rlist">${CH.map((c,ci)=>{const ks=c.groups.map((g,gi)=>gKey(ci,gi)),on=ks.filter(k=>B.sel.has(k)).length,st=on===0?'none':on===ks.length?'all':'part',op=B.open.has(ci);
+   return `<li style="--h:${c.h}"><div class="rrow">
+    <button class="chk ${st}" data-act="bch" data-ci="${ci}" role="checkbox" aria-checked="${st==='all'?'true':st==='part'?'mixed':'false'}"><span class="box"></span><span class="nm"><small>第${ci+1}章　${c.items.length}問</small>${esc(c.t)}</span></button>
+    <button class="opn" data-act="bopen" data-ci="${ci}" aria-expanded="${op}">${on}/${ks.length}テーマ ${op?'▲':'▼'}</button></div>
+    ${op?`<div class="gchips">${c.groups.map((g,gi)=>`<button class="gchip" data-act="bgr" data-k="${gKey(ci,gi)}" aria-pressed="${B.sel.has(gKey(ci,gi))}">${esc(g.n)}<small>${g.items.length}問</small></button>`).join('')}</div>`:''}
+   </li>`}).join('')}</ul>
+ </section>
+ <section class="mode"><h2>2. 問題数</h2>
+  <div class="seg">${[5,10,20,30,'all'].map(v=>`<button data-act="bn" data-v="${v}" aria-pressed="${B.n===v}">${v==='all'?'全部':v+'問'}</button>`).join('')}</div>
+ </section>
+ <section class="mode"><h2>3. 出題の順番</h2>
+  <div class="opts">${ORD.map(([v,t,d])=>`<button class="opt" data-act="bo" data-v="${v}" aria-pressed="${B.order===v}"><b>${t}</b><small>${d}</small></button>`).join('')}</div>
+  ${B.order==='miss'?`<p class="note">${missed?`この範囲で間違えたことがある問題は<b class="misscnt">${missed}問</b>ある。間違えた回数が同じ問題は正解した回数が少ないものから出る。`:'この範囲ではまだ間違えた問題がない。クイズを解くと記録がたまる。'}</p>`:''}
+ </section>
+ <div class="startbar"><div class="sum">${pool.length?`<b>${n}問</b> を出題する<small>選んだ範囲には${pool.length}問ある</small>`:'範囲を1つ以上選ぼう'}</div><button class="btn red" data-act="bstart" ${n?'':'disabled'}>スタート</button></div>`;
+}
+
+/* --- 暗記カード --- */
+function sentFull(it,cls='red'){return it.seg.map(s=>s.b?`<span class="${cls}">${esc(s.d)}</span>`:esc(s.t)).join('')}
+function renderCards(){
+ const ci=view.ci,c=CH[ci];
+ setHeader(`${esc(c.t)}｜暗記カード`,true);
+ main.innerHTML=`
+ <div class="toolbar"><button class="btn ghost" data-act="showall">すべて見る</button><button class="btn ghost" data-act="hideall">すべてかくす</button></div>
+ <p class="note">赤い点線の場所をタップすると単語が出たり消えたりする。</p>
+ ${c.groups.map(g=>`<section class="cgroup" style="--h:${c.h}"><h3>${esc(g.n)}</h3><ul class="clist">${g.items.map(it=>`<li>${it.seg.map(s=>s.b?`<button class="term" data-act="term" aria-pressed="false">${esc(s.d)}<span class="rd">${esc(s.r[0])}</span></button>`:esc(s.t)).join('')}</li>`).join('')}</ul></section>`).join('')}`;
+}
+
+/* --- クイズ --- */
+let Q=null;
+function startQuiz(ci,gi,items,mode,cfg=null){Q={ci,gi,mode,cfg,items:mode==='all'?shuffle(items):items.slice(),idx:0,input:'',answers:[],bi:0,checked:false,hint:false,res:[]};go('quiz',{ci})}
+const COLS=['あいうえお','かきくけこ','さしすせそ','たちつてと','なにぬねの','はひふへほ','まみむめも','や ゆ よ','らりるれろ','わをんー '];
+function kbHTML(){let h='<div class="kb">';for(let r=0;r<5;r++)for(let c=0;c<10;c++){const ch=COLS[c][r];h+=ch&&ch!==' '?`<button class="k" data-act="k" data-c="${ch}">${ch}</button>`:'<span class="k sp"></span>'}h+='</div>';
+ h+=`<div class="kb2"><button class="k fn" data-act="dak" aria-label="濁点">゛</button><button class="k fn" data-act="han" aria-label="半濁点">゜</button><button class="k fn" data-act="small">小</button><button class="k fn" data-act="del">⌫ 消す</button><button class="k go" data-act="ok">決定</button></div>`;return h}
+function quizLabel(q){return q.mode==='all'?'全問クイズ':q.mode==='retry'?'間違えた問題':q.mode==='custom'?'カスタム問題':CH[q.ci].groups[q.gi].n}
+function quizTitle(q){return q.ci==null?esc(quizLabel(q)):`${esc(CH[q.ci].t)}｜${esc(quizLabel(q))}`}
+function renderQuiz(){
+ const q=Q,it=q.items[q.idx],c=CH[it.ci],bl=blanks(it),nb=bl.length;
+ setHeader(quizTitle(q),true);
+ let bi=0;
+ const sent=it.seg.map(s=>{if(!s.b)return esc(s.t);const i=bi++;
+  if(q.checked){const ok=s.r.includes(norm(q.answers[i]));return `<span class="blank ${ok?'ok':'ng'}">${esc(q.answers[i]||'？')}</span>`}
+  if(i<q.bi)return `<span class="blank filled">${esc(q.answers[i])}</span>`;
+  if(i===q.bi)return `<span class="blank cur">${esc(q.input)}<i class="caret"></i></span>`;
+  return `<span class="blank">（${i+1}）</span>`}).join('');
+ const g=c.groups[it.gi];
+ let dock;
+ if(!q.checked){
+  const cur=bl[q.bi];
+  dock=`<div class="inrow"><div class="inbox" id="inbox">${q.input?esc(q.input):'<span class="ph">下のキーで答えを入力する</span>'}</div><button class="mini" data-act="hint">ヒント</button><button class="mini" data-act="skip">わからない</button></div>
+  ${q.hint?`<p class="hint">ヒント：${cur.r[0].length}文字で「${esc(cur.r[0][0])}」から始まる。</p>`:''}
+  ${kbHTML()}`;
+ }else{
+  const ok=q.res[q.res.length-1].ok,last=q.idx===q.items.length-1;
+  dock=`<div class="fb ${ok?'ok':'ng'}"><div class="head">${ok?'〇 正解！':'✕ 不正解'}</div>
+   <div class="ans">${bl.map(s=>`<b>${esc(s.d)}</b>（${esc(s.r[0])}）`).join('　')}</div>
+   <button class="btn wide" data-act="next" id="nextBtn">${last?'結果を見る':'次の問題へ'}</button></div>`;
+ }
+ main.innerHTML=`<div class="qwrap">
+  <div class="qprog"><span>${q.idx+1} / ${q.items.length}</span><div class="track"><div class="fill" style="width:${(q.idx/q.items.length)*100}%"></div></div><span>正解 ${q.res.filter(r=>r.ok).length}</span></div>
+  <div class="qcard" id="qcard"><div class="qtag"><span>${q.ci==null?`第${it.ci+1}章　`:''}${esc(g.n)}</span>${!q.checked&&stat(it).w>0?`<span class="misscnt">✕ ${stat(it).w}回</span>`:''}${nb>1&&!q.checked?`<span>空らん ${q.bi+1} / ${nb}</span>`:''}</div>${sent}</div>
+ </div>
+ <div class="dock"><div class="dock-in">${dock}</div></div>`;
+ if(q.checked){const b=document.getElementById('nextBtn');b&&b.focus({preventScroll:true})}
+}
+const BASE="かきくけこさしすせそたちつてとはひふへほ",DAK="がぎぐげござじずぜぞだぢづでどばびぶべぼ",HAN="はひふへほ",HAND="ぱぴぷぺぽ",SM="あいうえおつやゆよわ",SMD="ぁぃぅぇぉっゃゅょゎ";
+function modify(kind){const s=Q.input;if(!s)return;const c=s.slice(-1);let n=c,i;
+ if(kind==='dak'){if((i=BASE.indexOf(c))>=0)n=DAK[i];else if((i=DAK.indexOf(c))>=0)n=BASE[i];else if((i=HAND.indexOf(c))>=0)n=DAK[BASE.indexOf(HAN[i])];else if(c==='う')n='ゔ';else if(c==='ゔ')n='う'}
+ else if(kind==='han'){if((i=HAN.indexOf(c))>=0)n=HAND[i];else if((i=HAND.indexOf(c))>=0)n=HAN[i];else if((i=DAK.indexOf(c))>=0&&HAN.includes(BASE[i]))n=HAND[HAN.indexOf(BASE[i])]}
+ else if(kind==='small'){if((i=SM.indexOf(c))>=0)n=SMD[i];else if((i=SMD.indexOf(c))>=0)n=SM[i]}
+ Q.input=s.slice(0,-1)+n}
+function submit(){
+ const q=Q;if(q.checked){nextQ();return}
+ if(!q.input){const b=document.getElementById('inbox');if(b){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake')}return}
+ const it=q.items[q.idx],nb=blanks(it).length;
+ q.answers[q.bi]=q.input;
+ if(q.bi<nb-1){q.bi++;q.input='';q.hint=false;renderQuiz();return}
+ check()}
+function check(){const q=Q,it=q.items[q.idx],bl=blanks(it);
+ const ok=bl.every((s,i)=>s.r.includes(norm(q.answers[i])));
+ q.res.push({it,ans:bl.map((s,i)=>q.answers[i]||''),ok});q.checked=true;
+ const m=Object.assign({w:0,c:0},S.m[it.id]);ok?m.c++:m.w++;S.m[it.id]=m;save();sfx(ok?'ok':'ng');renderQuiz()}
+function nextQ(){const q=Q;q.idx++;if(q.idx>=q.items.length){finish();return}q.input='';q.answers=[];q.bi=0;q.checked=false;q.hint=false;renderQuiz();window.scrollTo(0,0)}
+function finish(){const q=Q,score=q.res.filter(r=>r.ok).length,tot=q.items.length;
+ let newBest=false;const hasCh=q.ci!=null,wasUn=hasCh&&unlocked(q.ci);
+ if(q.mode==='group'){const k=gKey(q.ci,q.gi),r=S.g[k]||{best:0};S.g[k]={done:true,best:Math.max(r.best||0,score)}}
+ if(q.mode==='all'){const r=S.a[q.ci]||{best:0};newBest=score>(r.best||0);S.a[q.ci]={best:Math.max(r.best||0,score),perfect:!!r.perfect||score===tot}}
+ save();go('result',{ci:q.ci,score,tot,newBest,justUn:hasCh&&!wasUn&&unlocked(q.ci)})}
+
+/* --- 結果 --- */
+function renderResult(){
+ const q=Q,{score,tot}=view,full=score===tot,miss=q.res.filter(r=>!r.ok);
+ const label=quizLabel(q);
+ setHeader(q.ci==null?'結果':`${esc(CH[q.ci].t)}｜結果`,true);
+ const big=full&&q.mode==='all';
+ let msg;
+ if(big)msg='全問正解！ この章の単語はばっちり覚えた！';
+ else if(full)msg='全問正解！ この調子で次のテーマへ進もう！';
+ else if(score/tot>=.7)msg='あと少しで満点に届く。間違えた問題を見直そう！';
+ else msg='暗記カードで確認してからもう一度挑戦しよう！';
+ const unNow=!!view.justUn;
+ main.innerHTML=`
+ <section class="res ${big?'gold':''}">
+  <div class="eyebrow">${esc(label)}</div>
+  ${big?'<div class="perfect">PERFECT!!</div>':''}
+  <div class="score">${score}<small> / ${tot}</small></div>
+  <p>${msg}</p>
+  ${unNow?'<p style="color:var(--red);font-weight:700">全問クイズのロックが解除された！</p>':''}
+  <div class="btnrow" style="margin-top:8px">
+   ${miss.length?'<button class="btn red" data-act="retry">間違えた問題だけ解く</button>':''}
+   <button class="btn ${miss.length?'ghost':''}" data-act="again">もう一度挑戦する</button>
+   ${q.ci==null?'<button class="btn ghost" data-act="builder">問題づくりへ戻る</button>':'<button class="btn ghost" data-act="toch">章のページへ戻る</button>'}
+  </div>
+ </section>
+ ${miss.length?`<section class="miss"><h3>間違えた問題</h3><ul>${miss.map(r=>`<li>${q.ci==null?`<span class="yours">第${r.it.ci+1}章　${esc(CH[r.it.ci].groups[r.it.gi].n)}</span>`:''}${sentFull(r.it)}<span class="yours">あなたの答え：${r.ans.map(a=>esc(a||'（わからない）')).join('／')}</span></li>`).join('')}</ul></section>`:''}`;
+ if(full){sfx('fan');confetti(big?260:90,big?4200:2200)}
+}
+
+/* --- 紙ふぶき --- */
+function confetti(n,ms){
+ if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ const cv=document.getElementById('fx'),x=cv.getContext('2d'),dpr=Math.min(2,window.devicePixelRatio||1);
+ cv.hidden=false;const W=innerWidth,H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';x.setTransform(dpr,0,0,dpr,0,0);
+ const col=['#E02F3A','#1E56D0','#F4B400','#0F8657','#9B4DE0','#FF7A1A','#18B7D6'];
+ const P=Array.from({length:n},(_,i)=>{const fromSide=i%2;return{x:fromSide?W+10:-10,y:H*.55+Math.random()*H*.3,vx:(fromSide?-1:1)*(4+Math.random()*9),vy:-(9+Math.random()*12),w:6+Math.random()*7,h:8+Math.random()*10,r:Math.random()*6,vr:(Math.random()-.5)*.4,c:col[i%col.length]}});
+ const t0=performance.now();
+ (function f(t){const e=t-t0;x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.32;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.globalAlpha=Math.max(0,1-Math.max(0,e-ms+800)/800);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h*Math.abs(Math.cos(p.r*2)));x.restore()});
+  if(e<ms)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);cv.hidden=true}})(t0);
+}
+
+
+/* ===== イベント ===== */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;ac();
+ switch(a){
+  case 'ch':go('chapter',{ci:+b.dataset.ci});break;
+  case 'builder':if(!B)initB();go('builder');break;
+  case 'bfromch':initB();B.sel=new Set(CH[view.ci].groups.map((g,gi)=>gKey(view.ci,gi)));B.open=new Set([view.ci]);go('builder');break;
+  case 'ball':B.sel=new Set(CH.flatMap((c,ci)=>c.groups.map((g,gi)=>gKey(ci,gi))));renderBuilder();break;
+  case 'bnone':B.sel.clear();renderBuilder();break;
+  case 'bch':{const ci=+b.dataset.ci,ks=CH[ci].groups.map((g,gi)=>gKey(ci,gi)),all=ks.every(k=>B.sel.has(k));ks.forEach(k=>all?B.sel.delete(k):B.sel.add(k));renderBuilder();break}
+  case 'bopen':{const ci=+b.dataset.ci;B.open.has(ci)?B.open.delete(ci):B.open.add(ci);renderBuilder();break}
+  case 'bgr':{const k=b.dataset.k;B.sel.has(k)?B.sel.delete(k):B.sel.add(k);renderBuilder();break}
+  case 'bn':B.n=b.dataset.v==='all'?'all':+b.dataset.v;renderBuilder();break;
+  case 'bo':B.order=b.dataset.v;renderBuilder();break;
+  case 'bstart':{const cfg={sel:[...B.sel],n:B.n,order:B.order};S.cfg=cfg;save();const items=buildItems(cfg);if(items.length)startQuiz(null,null,items,'custom',cfg);break}
+  case 'cards':go('cards',{ci:view.ci});break;
+  case 'quiz':{const gi=+b.dataset.gi;startQuiz(view.ci,gi,CH[view.ci].groups[gi].items,'group');break}
+  case 'all':startQuiz(view.ci,null,CH[view.ci].items,'all');break;
+  case 'toch':go('chapter',{ci:view.ci});break;
+  case 'again':{const q=Q;if(q.mode==='custom'){startQuiz(null,null,buildItems(q.cfg),'custom',q.cfg);break}startQuiz(q.ci,q.gi,q.mode==='group'?CH[q.ci].groups[q.gi].items:q.mode==='all'?CH[q.ci].items:q.items,q.mode,q.cfg);break}
+  case 'retry':{const q=Q;const items=q.res.filter(r=>!r.ok).map(r=>r.it);startQuiz(q.ci,q.gi,items,'retry',q.cfg);break}
+  case 'term':b.classList.toggle('show');b.setAttribute('aria-pressed',b.classList.contains('show'));break;
+  case 'showall':case 'hideall':document.querySelectorAll('.term').forEach(t=>{t.classList.toggle('show',a==='showall');t.setAttribute('aria-pressed',a==='showall')});break;
+  case 'k':if(Q&&!Q.checked&&Q.input.length<20){Q.input+=b.dataset.c;sfx('tap');renderQuiz()}break;
+  case 'dak':case 'han':case 'small':if(Q&&!Q.checked){modify(a);renderQuiz()}break;
+  case 'del':if(Q&&!Q.checked){Q.input=Q.input.slice(0,-1);renderQuiz()}break;
+  case 'ok':submit();break;
+  case 'hint':if(Q){Q.hint=true;renderQuiz()}break;
+  case 'skip':if(Q&&!Q.checked){Q.answers[Q.bi]=Q.input;check()}break;
+  case 'next':nextQ();break;
+  case 'reset1':document.getElementById('rst').innerHTML='<span class="confirm"><span>これまでの記録がすべて消える。</span><button class="btn red" data-act="reset2" style="min-height:36px;padding:6px 12px">記録を消す</button><button class="btn ghost" data-act="reset0" style="min-height:36px;padding:6px 12px">やめる</button></span>';break;
+  case 'reset0':renderHome();break;
+  case 'reset2':S={g:{},a:{},m:{},cfg:null,sound:S.sound};B=null;save();renderHome();break;
+ }});
+document.addEventListener('keydown',e=>{if(view.name!=='quiz'||!Q)return;
+ if(e.key==='Enter'){e.preventDefault();submit()}
+ else if(e.key==='Backspace'&&!Q.checked){e.preventDefault();Q.input=Q.input.slice(0,-1);renderQuiz()}
+ else if(!Q.checked&&/^[ぁ-ゖー]$/.test(e.key)&&Q.input.length<20){Q.input+=e.key;renderQuiz()}});
+render();
+</script>
+
+</body>
+</html>
